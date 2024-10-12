@@ -18,8 +18,9 @@ module TurboLive
     end
 
     def view_template
-      span(
+      div(
         id: verifiable_live_id,
+        style: "display: contents;",
         data_controller: "turbo-live",
         data_turbo_live_component_value: to_verifiable(serialize)
       ) do
