@@ -8,12 +8,12 @@ module TurboLive
 
     SUPPORTED_EVENTS = %i[click change].freeze
 
-    def self.state_prop(name, type, **options, &block)
+    def self.state(name, type, **options, &block)
       options = {reader: :public, writer: :protected}.merge(**options).compact
       prop(name, _Nilable(type), **options, &block)
     end
 
-    state_prop :live_id, String, writer: nil do |value|
+    state :live_id, String, writer: nil do |value|
       value || SecureRandom.hex
     end
 
