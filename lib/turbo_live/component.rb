@@ -19,7 +19,7 @@ module TurboLive
 
     def view_template
       span(
-        id: to_verifiable(live_id),
+        id: verifiable_live_id,
         data_controller: "turbo-live",
         data_turbo_live_component_value: to_verifiable(serialize)
       ) do
@@ -28,6 +28,10 @@ module TurboLive
     end
 
     def update(input)
+    end
+
+    def verifiable_live_id
+      to_verifiable(live_id)
     end
 
     protected
@@ -43,10 +47,27 @@ module TurboLive
       end
 
       data_action = actions.join(" ")
-      params.to_h.merge({data_action: data_action})
+      params.to_h.merge(data_action: data_action)
+    end
+
+    def every(milliseconds, event)
+      data = {milliseconds => to_verifiable(event)}.to_json
+      add_data :every, data
     end
 
     private
+
+    def add_data(type, value)
+      # Temporary hack to embed data.
+      # Switch to HTML templates
+      div(
+        class: "turbo-live-data",
+        data_turbo_live_id: verifiable_live_id,
+        data_turbo_live_data_type: type,
+        data_turbo_live_data_value: value,
+        style: "display: none;", display: :none
+      ) {}
+    end
 
     def serialize
       state = self.class.literal_properties.map do |prop|

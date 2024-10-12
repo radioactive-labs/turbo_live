@@ -42,7 +42,7 @@ module TurboLive
 
         component = component_klass.new(**component_data[:state])
         # rudimentary checksum to ensure id matches
-        raise ArgumentError, "component ID mismatch" unless component.live_id == from_verifiable(data[:id])
+        raise ArgumentError, "component ID mismatch" unless component.verifiable_live_id == data[:id]
 
         component
       end
