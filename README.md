@@ -1,38 +1,229 @@
 # TurboLive
 
-TODO: Delete this and the text below, and describe your gem
+TurboLive is a Ruby gem that enables the creation of async, progressively enhanced, live components for Ruby applications. It works seamlessly over both WebSockets and HTTPS, providing real-time interactivity with graceful degradation.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/turbo_live`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Table of Contents
+
+- [Installation](#installation)
+- [Setup](#setup)
+- [Usage](#usage)
+  - [Creating a Component](#creating-a-component)
+  - [Model State](#model-state)
+  - [View](#view)
+  - [Update](#update)
+- [Events](#events)
+  - [Manual Events](#manual-events)
+  - [Timed Events](#timed-events)
+- [Examples](#examples)
+- [Performance Considerations](#performance-considerations)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Changelog](#changelog)
+- [License](#license)
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add it to your project with:
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```console
+bundle add 'turbo_live'
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+Or install it yourself using:
 
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```console
+gem install turbo_live
+```
+
+### JavaScript
+
+TurboLive ships a JavaScript component that comes as an npm package. You can pin it with importmaps or install it as an npm package depending on your asset pipeline:
+
+For importmaps:
+
+```console
+bin/importmap pin @radioactive-labs/turbo-live
+```
+
+For npm:
+
+```console
+npm install @radioactive-labs/turbo-live
+```
+
+## Setup
+
+### Stimulus Controller
+
+TurboLive uses a Stimulus controller to manage interactions. In your `app/javascript/controllers/index.js`:
+
+```diff
+import { application } from "controllers/application"
+import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
++import * as turboLive from "@radioactive-labs/turbo-live"
+
+eagerLoadControllersFrom("controllers", application)
++turboLive.registerControllers(application)
+```
+
+### ActionCable (Optional)
+
+TurboLive supports WebSockets using ActionCable with automatic failover to HTTPS. If you have ActionCable set up and would like to benefit from better performance, you can set up the integration.
+
+In `app/javascript/channels/index.js`:
+
+```diff
++import consumer from "./consumer"
++import * as turboLive from "@radioactive-labs/turbo-live"
++
++turboLive.registerChannels(consumer)
+```
+
+Then in your `app/javascript/application.js`:
+
+```diff
+import "@hotwired/turbo-rails"
+import "controllers"
++import "channels"
 ```
 
 ## Usage
 
-TODO: Write usage instructions here
+A TurboLive component is a self-contained, interactive unit of a web application that can update in real-time without full page reloads. Components follow [The Elm Architecture](https://guide.elm-lang.org/architecture/) pattern.
 
-## Development
+### Creating a Component
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+To create a TurboLive component, inherit from `TurboLive::Component`:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+class MyComponent < TurboLive::Component
+  # Component logic goes here
+end
+```
+
+### Model State
+
+Define state variables using the `state` method:
+
+```ruby
+class MyComponent < TurboLive::Component
+  state :count, Integer do |value|
+    value || 0
+  end
+end
+```
+
+> Note: State variables can only be primitive objects and basic collections.
+
+### View
+
+Define the component's HTML structure in the `view` method:
+
+```ruby
+def view
+  div do
+    button(**on(click: :increment)) { "+" }
+    span { count }
+    button(**on(click: :decrement)) { "-" }
+  end
+end
+```
+
+Components are [phlex](https://www.phlex.fun/) views, allowing you to write HTML in Ruby.
+
+### Update
+
+Handle events in the `update` method:
+
+```ruby
+def update(input)
+  case input
+  in [:increment]
+    self.count += 1
+  in [:decrement]
+    self.count -= 1
+  end
+end
+```
+
+## Events
+
+Events are transmitted to the server using the currently active transport (HTTP or WebSockets).
+
+### Manual Events
+
+Use the `on` method to set up manually triggered events:
+
+```ruby
+button(**on(click: :decrement)) { "-" }
+```
+
+You can also emit compound events that carry extra data:
+
+```ruby
+button(**on(click: [:change_value, 1])) { "+" }
+```
+
+> Note: Currently, only `:click` and `:change` events are supported.
+
+### Timed Events
+
+Use the `every` method to set up recurring events:
+
+```ruby
+def view
+  div do
+    h1 { countdown }
+    every(1000, :tick) if countdown > 0
+  end
+end
+```
+
+## Examples
+
+See the [/examples](/examples) folder in for detailed component examples including Counter, Countdown, Showcase and Tic-Tac-Toe components.
+
+## Performance Considerations
+
+- Use fine-grained components to minimize the amount of data transferred and rendered.
+- Implement debouncing for frequently triggered events.
+- Consider using background jobs for heavy computations to keep the UI responsive.
+
+## Testing
+
+TurboLive components can be tested using standard Rails testing tools. Here's a basic example:
+
+```ruby
+require "test_helper"
+
+class CounterComponentTest < ActiveSupport::TestCase
+  test "increments count" do
+    component = CounterComponent.new
+    assert_equal 0, component.count
+    component.update([:increment])
+    assert_equal 1, component.count
+  end
+end
+```
+
+## Troubleshooting
+
+Common issues and their solutions:
+
+1. **Component not updating**: Ensure that your `update` method is correctly handling the event and modifying the state.
+2. **WebSocket connection failing**: Check your ActionCable configuration and ensure that your server supports WebSocket connections.
+3. **JavaScript errors**: Make sure you've correctly set up the TurboLive JavaScript integration in your application.
+
+For more issues, please check our [FAQ](https://github.com/radioactive-labs/turbo_live/wiki/FAQ) or open an issue on GitHub.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/turbo_live.
+We welcome contributions to TurboLive! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
+
+## Changelog
+
+See the [CHANGELOG.md](CHANGELOG.md) file for details on each release.
 
 ## License
 

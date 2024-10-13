@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["TheDumbTechGuy"]
   spec.email = ["sfroelich01@gmail.com"]
 
-  spec.summary = "Stateless live components for Ruby applications"
-  spec.description = "Stateless live components for Ruby applications that work over Websockets and HTTP."
+  spec.summary = "Async live components for Ruby applications"
+  spec.description = "Async live components for Ruby applications that work over Websockets and HTTP."
   spec.homepage = "https://github.com/radioactive-labs/turbo_live"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
