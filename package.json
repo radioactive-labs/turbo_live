@@ -1,6 +1,6 @@
 {
   "name": "@radioactive-labs/turbo-live",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Stateless live components for Ruby applications",
   "type": "module",
   "main": "src/js/core.js",
