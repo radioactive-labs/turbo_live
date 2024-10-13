@@ -1,0 +1,29 @@
+{
+  "name": "@radioactive-labs/turbo-live",
+  "version": "0.1.0",
+  "description": "Stateless live components for Ruby applications",
+  "type": "module",
+  "main": "src/js/core.js",
+  "files": [
+    "src/"
+  ],
+  "author": "Stefan Froelich (@thedumbtechguy)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/radioactive-labs/turbo_live/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radioactive-labs/turbo_live.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/radioactive-labs/turbo_live#readme",
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo": "^8.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {}
+}
