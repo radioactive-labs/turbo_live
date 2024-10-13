@@ -1,7 +1,7 @@
 {
   "name": "@radioactive-labs/turbo-live",
-  "version": "0.1.1",
-  "description": "Async live components for Ruby applications",
+  "version": "0.1.2",
+  "description": "Async, progressively enhanced, live components for Ruby applications that work over Websockets and HTTP.",
   "type": "module",
   "main": "src/js/core.js",
   "files": [
