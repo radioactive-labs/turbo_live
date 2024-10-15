@@ -14,7 +14,7 @@ module TurboLive
 
         # render the replace stream
         <<~STREAM
-          <turbo-stream action="replace" target="#{data[:id]}">
+          <turbo-stream action="replace" method="morph" target="#{data[:id]}">
             <template>
               #{component.call}
             </template>
