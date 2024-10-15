@@ -1,5 +1,7 @@
 class ShowcaseComponent < TurboLive::Component
-  state :component, Symbol
+  state :component, Symbol do |value|
+    value || :counter
+  end
 
   def view
     div class: "container" do
@@ -9,6 +11,7 @@ class ShowcaseComponent < TurboLive::Component
           li { button(**on(click: [:change_component, :counter])) { "Counter" } }
           li { button(**on(click: [:change_component, :countdown])) { "Countdown" } }
           li { button(**on(click: [:change_component, :tic_tac_toe])) { "TicTacToe" } }
+          li { button(**on(click: [:change_component, :flappy_bird])) { "Flappy Bird" } }
         end
       end
       div class: "right-column" do
@@ -30,12 +33,14 @@ class ShowcaseComponent < TurboLive::Component
 
   def selected_component
     case component
+    when :counter
+      CounterComponent
     when :countdown
       CountdownComponent
     when :tic_tac_toe
       TicTacToeComponent
-    else
-      CounterComponent
+    when :flappy_bird
+      FlappyBirdComponent
     end
   end
 end
