@@ -7,7 +7,7 @@ module TurboLive
   class Component < Phlex::HTML
     extend Literal::Properties
 
-    SUPPORTED_EVENTS = %i[click change].freeze
+    SUPPORTED_EVENTS = %i[click change input].freeze
 
     def self.state(name, type, **options, &block)
       options = {reader: :public, writer: :protected}.merge(**options).compact
@@ -53,28 +53,26 @@ module TurboLive
     end
 
     def every(milliseconds, event)
-      data = {milliseconds => to_verifiable(event)}.to_json
-      add_data :every, data
-    end
-
-    def norender!
-      raise SkipRender
+      data = {interval: milliseconds, event: to_verifiable(event)}.to_json
+      add_meta :interval, data
     end
 
     def norender
       SKIP_RENDER
     end
 
+    def norender!
+      raise SkipRender
+    end
+
     private
 
-    def add_data(type, value)
-      # Temporary hack to embed data.
-      # Switch to HTML templates when we move to Phlex 2.
+    def add_meta(type, value)
+      # TODO: turbo morph does some wonky things issues here since it doesn't force a replacement everytime
       div(
-        class: "turbo-live-data",
-        data_turbo_live_id: verifiable_live_id,
-        data_turbo_live_data_type: type,
-        data_turbo_live_data_value: value,
+        data_turbo_live_meta_type: type,
+        data_turbo_live_meta_value: value,
+        data_turbo_live_target: "meta",
         style: "display: none;", display: :none
       ) {}
     end

@@ -5,112 +5,132 @@ export default class extends Controller {
     id: String,
     component: String,
   }
+  static targets = ["meta"]
 
   get component() {
     return this.componentValue
   }
 
+  initialize() {
+    this.metaTargetsMap = new WeakMap()
+    this.metaTargetsCount = 0
+    this.intervals = {}
+  }
+
   connect() {
     console.log("TurboLiveController connected", this.element.id, this.component)
+  }
 
-    this.intervals = []
+  metaTargetConnected(target) {
+    console.log("TurboLiveController metaTargetConnected", this.element.id, this.#metaTargetId(target))
+    this.#readMetadata(target)
+  }
 
-    this.#readEmbeddedData()
+  metaTargetDisconnected(target) {
+    console.log("TurboLiveController metaTargetDisconnected", this.element.id, this.#metaTargetId(target))
+    this.#teardownInterval(this.#metaTargetId(target))
   }
 
   disconnect() {
-    console.log("TurboLiveController disconnected")
-    this.#clearIntervals()
+    console.log("TurboLiveController disconnected", this.element.id)
+    this.#cleanup()
   }
 
   dispatch(event, payload) {
     console.log("TurboLiveController dispatch", this.element.id, event, payload)
-    let data = { id: this.element.id, event: event, payload: payload, component: this.component }
-    if (window.turboLive) {
-      console.log("TurboLiveController dispatching via websockets")
-      window.turboLive.send(data)
-    }
-    else {
-      console.log("TurboLiveController dispatching via HTTP")
+    const data = { id: this.element.id, event, payload, component: this.component }
 
-      fetch('/turbo_live', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Network response was not OK`);
-          }
-          return response.text();
-        })
-        .then(turbo_stream => {
-          console.log('TurboLiveController dispatch success', turbo_stream);
-          if (turbo_stream) Turbo.renderStreamMessage(turbo_stream);
-        })
-        .catch((error) => {
-          console.error('TurboLiveController dispatch error', error);
-        });
+    if (window.turboLive) {
+      console.log("TurboLiveController dispatching via websockets", this.element.id)
+      window.turboLive.send(data)
+    } else {
+      console.log("TurboLiveController dispatching via HTTP", this.element.id)
+      this.#dispatchHTTP(data)
     }
   }
 
   onClick(event) {
-    // event.preventDefault();
-    console.log("TurboLiveController onClick")
+    console.log("TurboLiveController onClick", this.element.id)
     this.#dispatchSimpleEvent("click", event)
   }
 
   onChange(event) {
-    // event.preventDefault();
-    console.log("TurboLiveController onChange")
+    console.log("TurboLiveController onChange", this.element.id)
     this.#dispatchValueEvent("change", event)
   }
 
-  #readEmbeddedData() {
-    this.element.querySelectorAll(".turbo-live-data").forEach((element) => {
-      if (this.element.id != element.dataset.turboLiveId) return;
-
-      let type = element.dataset.turboLiveDataType
-      let value = JSON.parse(element.dataset.turboLiveDataValue)
-      switch (type) {
-        case "every":
-          this.#setupInterval(value)
-          break;
-      }
-    })
+  onInput(event) {
+    console.log("TurboLiveController onInput", this.element.id)
+    this.#dispatchValueEvent("input", event)
   }
 
-  #setupInterval(intervalConfig) {
-    try {
-      for (let interval in intervalConfig) {
-        this.intervals.push(
-          setInterval(() => {
-            this.dispatch("every", [intervalConfig[interval]])
-          }, interval)
-        )
-      }
+  #metaTargetId(target) {
+    if (!this.metaTargetsMap.has(target)) {
+      this.metaTargetsMap.set(target, ++this.metaTargetsCount)
     }
-    catch (e) {
+    return this.metaTargetsMap.get(target)
+  }
+
+  #readMetadata(element) {
+    const type = element.dataset.turboLiveMetaType
+    if (type === "interval") {
+      this.#setupInterval(element)
+    }
+  }
+
+  #setupInterval(element) {
+    try {
+      const config = JSON.parse(element.dataset.turboLiveMetaValue)
+      this.intervals[this.#metaTargetId(element)] = setInterval(() => {
+        this.dispatch("interval", [config.event])
+      }, config.interval)
+    } catch (e) {
       console.error(e)
     }
   }
 
-  #clearIntervals() {
-    this.intervals.forEach((interval) => {
-      clearInterval(interval)
-    })
+  #teardownInterval(id) {
+    if (this.intervals[id]) {
+      clearInterval(this.intervals[id])
+      delete this.intervals[id]
+    }
+  }
+
+  #cleanup() {
+    Object.keys(this.intervals).forEach(this.#teardownInterval.bind(this))
   }
 
   #dispatchSimpleEvent(name, { params }) {
-    let live_event = params[name]
-    this.dispatch(name, [live_event])
+    const liveEvent = params[name]
+    this.dispatch(name, [liveEvent])
   }
 
   #dispatchValueEvent(name, { params, target }) {
-    let value = target.value
-    let live_event = params[name]
-    this.dispatch(name, [live_event, value])
+    const value = target.value
+    const liveEvent = params[name]
+    this.dispatch(name, [liveEvent, value])
+  }
+
+  #dispatchHTTP(data) {
+    fetch('/turbo_live', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was not OK`)
+        }
+        return response.text()
+      })
+      .then(turboStream => {
+        console.log('TurboLiveController dispatch success', this.element.id, turboStream)
+        if (turboStream) Turbo.renderStreamMessage(turboStream)
+      })
+      .catch((error) => {
+        console.error('TurboLiveController dispatch error', this.element.id, error)
+      })
   }
 }

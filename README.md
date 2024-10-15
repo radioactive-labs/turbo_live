@@ -214,6 +214,7 @@ Common issues and their solutions:
 1. **Component not updating**: Ensure that your `update` method is correctly handling the event and modifying the state.
 2. **WebSocket connection failing**: Check your ActionCable configuration and ensure that your server supports WebSocket connections.
 3. **JavaScript errors**: Make sure you've correctly set up the TurboLive JavaScript integration in your application.
+3. **My timed events won't go away**: Due to the use of morphing, there might be instances where your some meta attributes are not removed.
 
 For more issues, please check our [FAQ](https://github.com/radioactive-labs/turbo_live/wiki/FAQ) or open an issue on GitHub.
 
