@@ -4,13 +4,14 @@ module TurboLive
   class Renderer
     class << self
       def render(data)
-        data = data.symbolize_keys
         # build the payload
         payload = extract_payload(data)
         # create the component
         component = build_component(data)
         # run the update function
-        component.update payload
+        result = component.update payload
+        return if result == TurboLive::SKIP_RENDER
+
         # render the replace stream
         <<~STREAM
           <turbo-stream action="replace" target="#{data[:id]}">
@@ -19,6 +20,8 @@ module TurboLive
             </template>
           </turbo-stream>
         STREAM
+      rescue SkipRender
+        nil
       end
 
       private

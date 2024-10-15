@@ -11,7 +11,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("TurboLiveController connected:", this.element.id, this.component)
+    console.log("TurboLiveController connected", this.element.id, this.component)
 
     this.intervals = []
 
@@ -24,7 +24,7 @@ export default class extends Controller {
   }
 
   dispatch(event, payload) {
-    console.log("TurboLiveController dispatch:", this.element.id, event, payload)
+    console.log("TurboLiveController dispatch", this.element.id, event, payload)
     let data = { id: this.element.id, event: event, payload: payload, component: this.component }
     if (window.turboLive) {
       console.log("TurboLiveController dispatching via websockets")
@@ -47,11 +47,11 @@ export default class extends Controller {
           return response.text();
         })
         .then(turbo_stream => {
-          console.log('TurboLiveController dispatch success:', turbo_stream);
-          Turbo.renderStreamMessage(turbo_stream);
+          console.log('TurboLiveController dispatch success', turbo_stream);
+          if (turbo_stream) Turbo.renderStreamMessage(turbo_stream);
         })
         .catch((error) => {
-          console.error('TurboLiveController dispatch error:', error);
+          console.error('TurboLiveController dispatch error', error);
         });
     }
   }

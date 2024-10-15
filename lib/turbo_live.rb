@@ -10,6 +10,10 @@ require_relative "../app/channels/components_channel" if defined?(ActionCable)
 module TurboLive
   class Error < StandardError; end
 
+  class SkipRender < StandardError; end
+
+  SKIP_RENDER = :skip_render
+
   class << self
     attr_writer :verifier_key
 

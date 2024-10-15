@@ -7,8 +7,8 @@ module TurboLive
     end
 
     def receive(params)
-      stream = Renderer.render params
-      ActionCable.server.broadcast(stream_name, stream)
+      stream = Renderer.render params.symbolize_keys
+      ActionCable.server.broadcast(stream_name, stream) if stream
     end
 
     protected

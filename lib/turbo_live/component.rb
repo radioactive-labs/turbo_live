@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "phlex"
+require "literal"
 
 module TurboLive
   class Component < Phlex::HTML
@@ -56,11 +57,19 @@ module TurboLive
       add_data :every, data
     end
 
+    def norender!
+      raise SkipRender
+    end
+
+    def norender
+      SKIP_RENDER
+    end
+
     private
 
     def add_data(type, value)
       # Temporary hack to embed data.
-      # Switch to HTML templates
+      # Switch to HTML templates when we move to Phlex 2.
       div(
         class: "turbo-live-data",
         data_turbo_live_id: verifiable_live_id,
@@ -72,7 +81,7 @@ module TurboLive
 
     def serialize
       state = self.class.literal_properties.map do |prop|
-        [prop.name, instance_variable_get(:"@#{prop.name}")]
+        [prop.name, public_send(prop.name)]
       end.to_h
 
       {klass: self.class.to_s, state: state}

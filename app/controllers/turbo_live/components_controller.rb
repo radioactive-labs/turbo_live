@@ -4,7 +4,7 @@ module TurboLive
   class ComponentsController < ActionController::API
     def update
       stream = Renderer.render params.to_unsafe_hash
-      render plain: stream
+      render plain: stream if stream
     end
   end
 end
