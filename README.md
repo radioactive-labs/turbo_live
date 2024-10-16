@@ -88,6 +88,15 @@ import "controllers"
 +import "channels"
 ```
 
+### HTTPS failover
+
+Mount the engine in `config/routes.rb` for HTTPS to work:
+
+```diff
+Rails.application.routes.draw do
++  mount TurboLive::Engine, at: "turbo_live"
+```
+
 ## Usage
 
 A TurboLive component is a self-contained, interactive unit of a web application that can update in real-time without full page reloads. Components follow [The Elm Architecture](https://guide.elm-lang.org/architecture/) pattern.
