@@ -67,12 +67,13 @@ module TurboLive
 
     private
 
-    def add_meta(type, value)
-      # TODO: turbo morph does some wonky things issues here since it doesn't force a replacement everytime
+    def add_meta(type, data)
       div(
-        data_turbo_live_meta_type: type,
-        data_turbo_live_meta_value: value,
+        data_controller: "turbo-live-meta-data",
         data_turbo_live_target: "meta",
+        data_turbo_live_meta_data_type_value: type,
+        data_turbo_live_meta_data_data_value: data,
+        data_action: "turbo:before-morph-element->turbo-live-meta-data#beforeMorph turbo:morph-element->turbo-live-meta-data#afterMorph",
         style: "display: none;", display: :none
       ) {}
     end
