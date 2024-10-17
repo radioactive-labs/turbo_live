@@ -23,7 +23,8 @@ module TurboLive
         id: verifiable_live_id,
         style: "display: contents;",
         data_controller: "turbo-live",
-        data_turbo_live_component_value: to_verifiable(serialize)
+        data_turbo_live_component_value: to_verifiable(serialize),
+        data_turbo_live_protocol_version_value: TurboLive::PROTOCOL_VERSION
       ) do
         view
       end

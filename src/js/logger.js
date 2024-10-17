@@ -42,7 +42,7 @@ export class Logger {
     }
 }
 
-export const logger = new Logger(Logger.LOG_LEVELS.INFO);
+export const logger = new Logger();
 
 // Usage examples:
 // import { Logger, logger } from './logger.js';

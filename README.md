@@ -139,9 +139,9 @@ Handle events in the `update` method:
 ```ruby
 def update(input)
   case input
-  in [:increment]
+  in :increment
     self.count += 1
-  in [:decrement]
+  in :decrement
     self.count -= 1
   end
 end
@@ -165,7 +165,21 @@ You can also emit compound events that carry extra data:
 button(**on(click: [:change_value, 1])) { "+" }
 ```
 
-> Note: Currently, only `:click` and `:change` events are supported.
+Certain events carry extra data as well, such as `input` and `change` events.
+
+```ruby
+input(value:, input_value, **on(input: :input_changed))
+```
+
+```ruby
+def update(input)
+  case input
+  in [:input_changed, value]
+    self.input_value = value
+  end
+end
+
+> Note: Currently, only `:click`, `:input` and `:change` events are supported.
 
 ### Timed Events
 
@@ -201,7 +215,7 @@ class CounterComponentTest < ActiveSupport::TestCase
   test "increments count" do
     component = CounterComponent.new
     assert_equal 0, component.count
-    component.update([:increment])
+    component.update(:increment)
     assert_equal 1, component.count
   end
 end

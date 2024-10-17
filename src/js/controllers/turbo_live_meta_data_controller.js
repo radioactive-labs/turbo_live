@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import logger from "../logger.js"
+import { logger } from "../logger.js"
 
 export default class extends Controller {
   static values = {

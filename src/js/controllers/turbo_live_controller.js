@@ -1,15 +1,28 @@
 import { Controller } from "@hotwired/stimulus"
-import logger from "../logger.js"
+import { logger } from "../logger.js"
+
+const SupportedProtocolVersion = "0.2.0"
 
 export default class extends Controller {
   static values = {
     id: String,
     component: String,
+    protocolVersion: String,
   }
   static targets = ["meta"]
 
   get component() {
     return this.componentValue
+  }
+
+  connect() {
+    logger.log("TurboLiveController connect", this.element.id, this.protocolVersionValue)
+    if (SupportedProtocolVersion != this.protocolVersionValue) {
+      throw Error(`
+      Protocol version ${this.protocolVersionValue} is not supported
+            (supported version: ${SupportedProtocolVersion})
+      `)
+    }
   }
 
   metaTargetConnected(target) {
@@ -46,7 +59,6 @@ export default class extends Controller {
     logger.debug("TurboLiveController onInput", this.element.id, event)
     this.#dispatchValueEvent("input", event)
   }
-
 
   #dispatchSimpleEvent(name, { params }) {
     logger.debug("TurboLiveController dispatchSimpleEvent", this.element.id, name, params)

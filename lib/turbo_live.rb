@@ -12,6 +12,7 @@ module TurboLive
 
   class SkipRender < StandardError; end
 
+  PROTOCOL_VERSION = "0.2.0"
   SKIP_RENDER = :skip_render
 
   class << self

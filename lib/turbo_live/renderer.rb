@@ -31,7 +31,7 @@ module TurboLive
         if data[:payload].size == 2
           [payload_event, data[:payload][1]]
         else
-          [payload_event]
+          payload_event
         end
       end
 
