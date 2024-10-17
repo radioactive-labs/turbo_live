@@ -54,6 +54,21 @@ npm install @radioactive-labs/turbo-live
 
 ## Setup
 
+### Rails Routes
+
+In your rails routes, mount the engine:
+
+```diff
+Rails.application.routes.draw do
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
++  mount TurboLive::Engine => "/turbo_live"
+
+  # Defines the root path route ("/")
+  root "index#index"
+end
+```
+
 ### Stimulus Controller
 
 TurboLive uses a Stimulus controller to manage interactions. In your `app/javascript/controllers/index.js`:
