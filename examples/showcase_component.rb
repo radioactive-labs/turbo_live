@@ -12,6 +12,7 @@ class ShowcaseComponent < TurboLive::Component
           li { button(**on(click: [:change_component, :countdown])) { "Countdown" } }
           li { button(**on(click: [:change_component, :tic_tac_toe])) { "TicTacToe" } }
           li { button(**on(click: [:change_component, :flappy_bird])) { "Flappy Bird" } }
+          li { button(**on(click: [:change_component, :form])) { "Form" } }
         end
       end
       div class: "right-column" do
@@ -24,7 +25,7 @@ class ShowcaseComponent < TurboLive::Component
 
   def update(input)
     case input
-    in [[:change_component, component]]
+    in [:change_component, component]
       self.component = component
     end
   end
@@ -41,6 +42,8 @@ class ShowcaseComponent < TurboLive::Component
       TicTacToeComponent
     when :flappy_bird
       FlappyBirdComponent
+    when :form
+      FormComponent
     end
   end
 end

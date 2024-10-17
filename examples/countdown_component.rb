@@ -14,9 +14,9 @@ class CountdownComponent < TurboLive::Component
 
   def update(input)
     case input
-    in [:countdown]
+    in :countdown
       self.countdown -= 1
-    in [:start]
+    in :start
       self.countdown = 1000
     end
   end

@@ -15,11 +15,11 @@ class CounterComponent < TurboLive::Component
 
   def update(input)
     case input
-    in [:decrement]
+    in :decrement
       self.count -= 1
-    in [:increment]
+    in :increment
       self.count += 1
-    in [:reset]
+    in :reset
       self.count = 0
     end
   end

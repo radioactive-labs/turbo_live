@@ -75,14 +75,14 @@ class FlappyBirdComponent < TurboLive::Component
 
   def update(input)
     case input
-    in [:jump]
+    in :jump
       if game_over
         reset_game
       else
         self.nonce = NONCES[live_id] = NONCES[live_id] + 1
         self.bird_velocity = JUMP_STRENGTH
       end
-    in [:tick]
+    in :tick
       norender! if nonce < NONCES[live_id]
       update_game_state
     end

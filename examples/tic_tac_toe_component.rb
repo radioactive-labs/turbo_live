@@ -50,9 +50,9 @@ class TicTacToeComponent < TurboLive::Component
 
   def update(input)
     case input
-    in [[:make_move, index]]
+    in [:make_move, index]
       make_move(index)
-    in [:reset_game]
+    in :reset_game
       reset_game
     end
   end
