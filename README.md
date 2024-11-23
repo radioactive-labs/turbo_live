@@ -46,7 +46,13 @@ For importmaps:
 bin/importmap pin @radioactive-labs/turbo-live
 ```
 
-For npm:
+For yarn:
+
+```console
+yarn add @radioactive-labs/turbo-live
+```
+
+Or YAR:
 
 ```console
 npm install @radioactive-labs/turbo-live
@@ -76,9 +82,10 @@ TurboLive uses a Stimulus controller to manage interactions. In your `app/javasc
 ```diff
 import { application } from "controllers/application"
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
-+import * as turboLive from "@radioactive-labs/turbo-live"
 
 eagerLoadControllersFrom("controllers", application)
+
++import * as turboLive from "@radioactive-labs/turbo-live"
 +turboLive.registerControllers(application)
 ```
 

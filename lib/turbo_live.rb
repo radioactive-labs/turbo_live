@@ -5,7 +5,7 @@ require_relative "turbo_live/component"
 require_relative "turbo_live/renderer"
 
 require_relative "turbo_live/engine" if defined?(Rails)
-require_relative "../app/channels/components_channel" if defined?(ActionCable)
+require_relative "../app/channels/turbo_live/components_channel" if defined?(ActionCable::Channel::Base)
 
 module TurboLive
   class Error < StandardError; end
