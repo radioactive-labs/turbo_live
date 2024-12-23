@@ -3,6 +3,7 @@
 require_relative "turbo_live/version"
 require_relative "turbo_live/component"
 require_relative "turbo_live/renderer"
+require_relative "turbo_live/serializer"
 
 require_relative "turbo_live/engine" if defined?(Rails)
 require_relative "../app/channels/turbo_live/components_channel" if defined?(ActionCable::Channel::Base)
@@ -17,13 +18,18 @@ module TurboLive
 
   class << self
     attr_writer :verifier_key
+    attr_writer :serializer
 
     def verifier
-      @verifier ||= ActiveSupport::MessageVerifier.new(verifier_key, digest: "SHA256", serializer: YAML)
+      @verifier ||= ActiveSupport::MessageVerifier.new(verifier_key, digest: "SHA256", serializer: serializer)
     end
 
     def verifier_key
       @verifier_key or raise ArgumentError, "Turbo requires a verifier_key"
+    end
+
+    def serializer
+      @serializer ||= TurboLive::Serializer
     end
   end
 end

@@ -6,6 +6,10 @@ TurboLive is a Ruby gem that enables the creation of async, progressively enhanc
 
 - [Installation](#installation)
 - [Setup](#setup)
+  - [Rails Routes](#rails-routes)
+  - [Stimulus Controller](#stimulus-controller)
+  - [ActionCable (Optional)](#actioncable-optional)
+  - [Serializer Configuration](#serializer-configuration)
 - [Usage](#usage)
   - [Creating a Component](#creating-a-component)
   - [Model State](#model-state)
@@ -108,6 +112,28 @@ Then in your `app/javascript/application.js`:
 import "@hotwired/turbo-rails"
 import "controllers"
 +import "channels"
+```
+
+### Serializer Configuration
+
+TurboLive requires a serializer for state management.
+
+The default serializer (`TurboLive::Serializer`) simply wraps YAML, which handles primitive objects and basic collections.
+If you need to serialize complex objects, you can provide your own serializer implementation or customize the in-built.
+
+You can configure the serializer in an initializer:
+
+```ruby
+# config/initializers/turbo_live.rb
+
+# Optional - defaults to TurboLive::Serializer
+TurboLive.serializer = YourCustomSerializer
+
+# (Optional) You can set a custom verifier key for security
+TurboLive.verifier_key = Rails.application.secret_key_base
+
+# pass extra permitted classes to the underlying YAML serializer
+TurboLive::Serializer.permitted_classes << BigDecimal
 ```
 
 ## Usage
