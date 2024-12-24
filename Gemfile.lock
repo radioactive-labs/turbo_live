@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    turbo_live (0.3.0)
+    turbo_live (0.3.1)
       literal
       phlex-rails
 

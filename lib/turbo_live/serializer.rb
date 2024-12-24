@@ -3,6 +3,8 @@
 module TurboLive
   class Serializer
     class << self
+      attr_writer :permitted_classes
+
       def dump(obj)
         YAML.dump(obj)
       end
